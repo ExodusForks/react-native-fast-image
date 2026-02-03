@@ -30,7 +30,9 @@
         "ios",
         "!ios/build",
         "dist",
-        "RNFastImage.podspec"
+        "RNFastImage.podspec",
+        "!**/*.test.*",
+        "!**/*.js.flow"
     ],
     "workspaces": [
         "ReactNativeFastImageExample"
