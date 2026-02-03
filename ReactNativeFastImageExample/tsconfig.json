@@ -3,7 +3,7 @@
   "compilerOptions": {
     "moduleResolution": "Node",
     "paths": {
-      "@d11/react-native-fast-image": ["../src/index"]
+      "@exodus/react-native-fast-image": ["../src/index"]
     }
   },
   "include": ["./src", "__tests__"]
