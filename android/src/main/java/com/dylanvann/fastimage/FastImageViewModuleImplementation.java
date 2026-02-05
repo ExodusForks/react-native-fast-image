@@ -40,14 +40,25 @@ class FastImageViewModuleImplementation {
             }
         });
     }
-    public void clearDiskCache(Promise promise) {
+    public void clearDiskCache(final Promise promise) {
         final Activity activity = getCurrentActivity();
         if (activity == null) {
             promise.resolve(null);
             return;
         }
 
-        Glide.get(activity.getApplicationContext()).clearDiskCache();
-        promise.resolve(null);
+        final Activity activityForUi = activity;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Glide.get(activityForUi.getApplicationContext()).clearDiskCache();
+                activityForUi.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        promise.resolve(null);
+                    }
+                });
+            }
+        }).start();
     }
 }
