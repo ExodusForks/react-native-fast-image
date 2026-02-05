@@ -30,6 +30,7 @@ import com.facebook.react.viewmanagers.FastImageViewManagerDelegate;
 import com.facebook.react.viewmanagers.FastImageViewManagerInterface;
 import com.facebook.react.uimanager.common.ViewUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -119,10 +120,12 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
         if (view.glideUrl != null) {
             final String key = view.glideUrl.toString();
             FastImageOkHttpProgressGlideModule.forget(key);
-            List<FastImageViewWithUrl> viewsForKey = VIEWS_FOR_URLS.get(key);
-            if (viewsForKey != null) {
-                viewsForKey.remove(view);
-                if (viewsForKey.size() == 0) VIEWS_FOR_URLS.remove(key);
+            synchronized (VIEWS_FOR_URLS) {
+                List<FastImageViewWithUrl> viewsForKey = VIEWS_FOR_URLS.get(key);
+                if (viewsForKey != null) {
+                    viewsForKey.remove(view);
+                    if (viewsForKey.size() == 0) VIEWS_FOR_URLS.remove(key);
+                }
             }
         }
 
@@ -142,9 +145,14 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
 
     @Override
     public void onProgress(String key, long bytesRead, long expectedLength) {
-        List<FastImageViewWithUrl> viewsForKey = VIEWS_FOR_URLS.get(key);
-        if (viewsForKey != null) {
-            for (FastImageViewWithUrl view : viewsForKey) {
+        final List<FastImageViewWithUrl> snapshot;
+        synchronized (VIEWS_FOR_URLS) {
+            List<FastImageViewWithUrl> viewsForKey = VIEWS_FOR_URLS.get(key);
+            snapshot = (viewsForKey == null) ? null : new ArrayList<>(viewsForKey);
+        }
+
+        if (snapshot != null) {
+            for (FastImageViewWithUrl view : snapshot) {
                 ThemedReactContext context = (ThemedReactContext) view.getContext();
                 EventDispatcher dispatcher = UIManagerHelper.getEventDispatcherForReactTag(context, view.getId());
                 int surfaceId = UIManagerHelper.getSurfaceId(context);
