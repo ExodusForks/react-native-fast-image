@@ -118,7 +118,7 @@ class FastImageViewManager extends SimpleViewManager<FastImageViewWithUrl> imple
         view.clearView(requestManager);
 
         if (view.glideUrl != null) {
-            final String key = view.glideUrl.toString();
+            final String key = view.glideUrl.toStringUrl();
             FastImageOkHttpProgressGlideModule.forget(key);
             synchronized (VIEWS_FOR_URLS) {
                 List<FastImageViewWithUrl> viewsForKey = VIEWS_FOR_URLS.get(key);
