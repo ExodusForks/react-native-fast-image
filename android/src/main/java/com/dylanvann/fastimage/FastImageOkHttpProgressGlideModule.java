@@ -77,34 +77,52 @@ public class FastImageOkHttpProgressGlideModule extends LibraryGlideModule {
     }
 
     private static class DispatchingProgressListener implements ResponseProgressListener {
+        private final Object LOCK = new Object();
         private final Map<String, FastImageProgressListener> LISTENERS = new WeakHashMap<>();
         private final Map<String, Long> PROGRESSES = new HashMap<>();
 
         void forget(String key) {
-            LISTENERS.remove(key);
-            PROGRESSES.remove(key);
+            synchronized (LOCK) {
+                LISTENERS.remove(key);
+                PROGRESSES.remove(key);
+            }
         }
 
         void expect(String key, FastImageProgressListener listener) {
-            LISTENERS.put(key, listener);
+            synchronized (LOCK) {
+                LISTENERS.put(key, listener);
+            }
         }
 
         @Override
         public void update(final String key, final long bytesRead, final long contentLength) {
-            final FastImageProgressListener listener = LISTENERS.get(key);
-            if (listener == null) {
-                return;
+            final FastImageProgressListener listener;
+            final boolean shouldDispatch;
+            final float granularity;
+
+            synchronized (LOCK) {
+                listener = LISTENERS.get(key);
+                if (listener == null) {
+                    return;
+                }
+
+                granularity = listener.getGranularityPercentage();
+
+                if (contentLength <= bytesRead) {
+                    LISTENERS.remove(key);
+                    PROGRESSES.remove(key);
+                }
+
+                shouldDispatch = needsDispatchLocked(key, bytesRead, contentLength, granularity);
             }
-            if (contentLength <= bytesRead) {
-                forget(key);
-            }
-            if (needsDispatch(key, bytesRead, contentLength, listener.getGranularityPercentage())) {
+
+            if (shouldDispatch) {
                 listener.onProgress(key, bytesRead, contentLength);
             }
         }
 
-        private boolean needsDispatch(String key, long current, long total, float granularity) {
-            if (granularity == 0 || current == 0 || total == current) {
+        private boolean needsDispatchLocked(String key, long current, long total, float granularity) {
+            if (total <= 0 || granularity == 0 || current == 0 || total == current) {
                 return true;
             }
             float percent = 100f * current / total;
