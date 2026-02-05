@@ -3,7 +3,6 @@
 #import <CoreImage/CoreImage.h>
 #import <SDWebImage/UIImage+MultiFormat.h>
 #import <SDWebImage/UIView+WebCache.h>
-#import <SDWebImageWebPCoder/SDImageWebPCoder.h>
 
 @interface FFFastImageView ()
 
@@ -111,7 +110,6 @@ static NSString * const kFFFastImageDefaultErrorMessage = @"Load failed";
 - (void)commonInitUtils {
     self.resizeMode = RCTResizeModeCover;
     self.clipsToBounds = YES;
-    [[SDImageCodersManager sharedManager] addCoder:[SDImageWebPCoder sharedCoder]];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
