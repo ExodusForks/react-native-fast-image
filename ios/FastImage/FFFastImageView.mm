@@ -3,11 +3,6 @@
 #import <CoreImage/CoreImage.h>
 #import <SDWebImage/UIImage+MultiFormat.h>
 #import <SDWebImage/UIView+WebCache.h>
-#import <SDWebImageAVIFCoder/SDImageAVIFCoder.h>
-#import <SDWebImageWebPCoder/SDImageWebPCoder.h>
-#if !defined(DISABLE_SVG) || DISABLE_SVG == 0
-#import <SDWebImageSVGCoder/SDImageSVGCoder.h>
-#endif
 
 @interface FFFastImageView ()
 
@@ -29,6 +24,7 @@ static NSString * const kFFFastImageDefaultErrorMessage = @"Load failed";
 
 
 - (void)onLoadEventSend:(UIImage *)image {
+    if (!image) { return; }
     NSDictionary* onLoadEvent = @{
             @"width": [NSNumber numberWithDouble: image.size.width],
             @"height": [NSNumber numberWithDouble: image.size.height]
@@ -115,11 +111,6 @@ static NSString * const kFFFastImageDefaultErrorMessage = @"Load failed";
 - (void)commonInitUtils {
     self.resizeMode = RCTResizeModeCover;
     self.clipsToBounds = YES;
-    [[SDImageCodersManager sharedManager] addCoder:[SDImageAVIFCoder sharedCoder]];
-    [[SDImageCodersManager sharedManager] addCoder:[SDImageWebPCoder sharedCoder]];
-#if !defined(DISABLE_SVG) || DISABLE_SVG == 0
-    [[SDImageCodersManager sharedManager] addCoder:[SDImageSVGCoder sharedCoder]];
-#endif
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -254,11 +245,25 @@ static NSString * const kFFFastImageDefaultErrorMessage = @"Load failed";
         if (url && [url hasPrefix: @"data:image"]) {
             [self onLoadStartEvent];
             // Use SDWebImage API to support external format like WebP images
-            UIImage* image = [UIImage sd_imageWithData: [NSData dataWithContentsOfURL: _source.url]];
-            [self setImage: image];
+            NSData *data = [NSData dataWithContentsOfURL:_source.url];
+            UIImage* image = data ? [UIImage sd_imageWithData:data] : nil;
+            if (!image) {
+                self.hasErrored = YES;
+                NSError *err = [NSError
+                    errorWithDomain:@"FFFastImage"
+                    code:-1
+                    userInfo:@{
+                        NSLocalizedDescriptionKey: kFFFastImageDefaultErrorMessage
+                    }
+                ];
+                [self onErrorEvent:err];
+                [self onLoadEndEvent];
+                return;
+            }
+            [self setImage:image];
             [self onProgressEvent:1 expectedSize:1];
             self.hasCompleted = YES;
-            [self sendOnLoad: image];
+            [self sendOnLoad:image];
             [self onLoadEndEvent];
             return;
         }

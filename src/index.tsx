@@ -289,7 +289,6 @@ export interface FastImageStaticProperties {
     priority: typeof priority
     cacheControl: typeof cacheControl
     transition: typeof transition
-    preload: (sources: Source[]) => void
     clearMemoryCache: () => Promise<void>
     clearDiskCache: () => Promise<void>
 }
@@ -304,8 +303,6 @@ FastImage.cacheControl = cacheControl
 FastImage.priority = priority
 
 FastImage.transition = transition
-
-FastImage.preload = (sources: Source[]) => FastImageViewModule.preload(sources)
 
 FastImage.clearMemoryCache = () => FastImageViewModule.clearMemoryCache()
 

@@ -8,10 +8,10 @@ import com.facebook.react.uimanager.events.Event;
 
 public class FastImageProgressEvent extends Event<FastImageProgressEvent> {
 
-    private final int mBytesRead;
-    private final int mExpectedLength;
+    private final long mBytesRead;
+    private final long mExpectedLength;
 
-    public FastImageProgressEvent(int surfaceId, int viewTag, int bytesRead, int expectedLength) {
+    public FastImageProgressEvent(int surfaceId, int viewTag, long bytesRead, long expectedLength) {
         super(surfaceId, viewTag);
         this.mBytesRead = bytesRead;
         this.mExpectedLength = expectedLength;
@@ -26,8 +26,14 @@ public class FastImageProgressEvent extends Event<FastImageProgressEvent> {
     @Override
     protected WritableMap getEventData() {
         WritableMap eventData = Arguments.createMap();
-        eventData.putInt("loaded", mBytesRead);
-        eventData.putInt("total", mExpectedLength);
+        // Use doubles to avoid overflow: RN bridges numbers as doubles in JS.
+        eventData.putDouble("loaded", (double) mBytesRead);
+        if (mExpectedLength >= 0) {
+            eventData.putDouble("total", (double) mExpectedLength);
+        } else {
+            // Unknown content-length
+            eventData.putNull("total");
+        }
         return eventData;
     }
 

@@ -24,10 +24,6 @@ def isNewArchitectureEnabled() {
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
 
-def isSvgDisabled() {
-    return System.getenv("DISABLE_SVG")?.toBoolean() ?: false
-}
-
 if (isNewArchitectureEnabled()) {
     apply plugin: "com.facebook.react"
 }
@@ -49,11 +45,6 @@ android {
     sourceSets {
         main {
             java {
-                if (!isSvgDisabled()) {
-                    srcDirs += [
-                        "src/svg",
-                    ]
-                }
                 if (isNewArchitectureEnabled()) {
                     srcDirs += [
                     "src/newarch",
@@ -96,15 +87,5 @@ dependencies {
     implementation 'com.facebook.react:react-native:+'  // From node_modules
     implementation "com.github.bumptech.glide:glide:${glideVersion}"
     implementation "com.github.bumptech.glide:okhttp3-integration:${glideVersion}"
-    implementation 'org.aomedia.avif.android:avif:1.1.1.14d8e3c4'
-    implementation ("com.github.bumptech.glide:avif-integration:4.16.0") {
-        exclude group: 'org.aomedia.avif.android', module: 'avif'
-    }
-    implementation "com.github.zjupure:webpdecoder:2.7.${glideVersion}"
     annotationProcessor "com.github.bumptech.glide:compiler:${glideVersion}"
-    // TODO: Make this configurable as it increases apk size by 900KB
-    implementation 'com.github.penfeizhou.android.animation:glide-plugin:3.0.5'
-    if (!isSvgDisabled()) {
-        implementation "com.caverock:androidsvg:1.4"
-    }
 }

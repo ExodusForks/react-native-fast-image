@@ -1,4 +1,4 @@
-import FastImage from '@d11/react-native-fast-image';
+import FastImage from '@exodus/react-native-fast-image';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import FeatureText from './FeatureText';

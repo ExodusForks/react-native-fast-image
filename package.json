@@ -1,6 +1,6 @@
 {
-    "name": "@d11/react-native-fast-image",
-    "version": "8.13.0",
+    "name": "@exodus/react-native-fast-image",
+    "version": "8.13.0-rc.0",
     "description": "🚩 FastImage, performant React Native image component.",
     "keywords": [
         "cache",
@@ -30,7 +30,9 @@
         "ios",
         "!ios/build",
         "dist",
-        "RNFastImage.podspec"
+        "RNFastImage.podspec",
+        "!**/*.test.*",
+        "!**/*.js.flow"
     ],
     "workspaces": [
         "ReactNativeFastImageExample"

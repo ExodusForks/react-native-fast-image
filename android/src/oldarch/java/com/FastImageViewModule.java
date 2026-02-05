@@ -30,11 +30,6 @@ class FastImageViewModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void preload(final ReadableArray sources) {
-        impl.preload(sources);
-    }
-
-    @ReactMethod
     public void clearMemoryCache(final Promise promise) {
         impl.clearMemoryCache(promise);
     }
