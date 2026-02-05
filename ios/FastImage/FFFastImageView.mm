@@ -24,6 +24,7 @@ static NSString * const kFFFastImageDefaultErrorMessage = @"Load failed";
 
 
 - (void)onLoadEventSend:(UIImage *)image {
+    if (!image) { return; }
     NSDictionary* onLoadEvent = @{
             @"width": [NSNumber numberWithDouble: image.size.width],
             @"height": [NSNumber numberWithDouble: image.size.height]
