@@ -30,11 +30,6 @@ class FastImageViewModule extends NativeFastImageViewModuleSpec {
     }
 
     @Override
-    public void preload(final ReadableArray sources) {
-        impl.preload(sources);
-    }
-
-    @Override
     public void clearMemoryCache(final Promise promise) {
         impl.clearMemoryCache(promise);
     }
