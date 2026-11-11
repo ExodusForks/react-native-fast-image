@@ -9,13 +9,13 @@
         "image",
         "priority"
     ],
-    "homepage": "https://github.com/ds-horizon/react-native-fast-image#readme",
+    "homepage": "https://github.com/ExodusForks/react-native-fast-image#readme",
     "bugs": {
-        "url": "https://github.com/ds-horizon/react-native-fast-image/issues"
+        "url": "https://github.com/ExodusForks/react-native-fast-image/issues"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/ds-horizon/react-native-fast-image.git"
+        "url": "https://github.com/ExodusForks/react-native-fast-image.git"
     },
     "license": "(MIT AND Apache-2.0)",
     "author": "Dream Sports Labs <dreamsportslabs@dream11.com> (https://github.com/ds-horizon)",
